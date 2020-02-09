@@ -12,12 +12,12 @@
 using namespace sf;
 
 void GameDirector::run() {
-    RenderWindow app(VideoMode(744, 1080), "Match-3 Game!", Style::None);
+    RenderWindow app(VideoMode(744, 1080), "Match-3 Game!", Style::Close);
     app.setFramerateLimit(60);
     
     Texture t1,t2;
-    t1.loadFromFile("/Users/ben/Desktop/Match-3/Resources/Background.png");
-    t2.loadFromFile("/Users/ben/Desktop/Match-3/Resources/gems.png");
+    t1.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/Background.png");
+    t2.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/gems.png");
     Sprite background(t1), gems(t2);
     
     BOARD_LOOP {
@@ -43,30 +43,10 @@ void GameDirector::run() {
         }
         
         // mouse click
-        if (_click == 1) {
-            _x0 = _pos.x / ts + 1;
-            _y0 = _pos.y / ts + 1;
-        }
-        
-        if (_click == 2) {
-            _x = _pos.x / ts + 1;
-            _y = _pos.y / ts + 1;
-            if (abs(_x - _x0) + abs(_y - _y0) == 1) {
-                swapTiles(_board, _board[_y0][_x0], _board[_y][_x]); _isSwap = true; _click = 0;
-            }
-            else _click = 1;
-        }
+        _clickHandler();
         
         //Match finding
-        BOARD_LOOP {
-            if (_board[i][j].kind == _board[i + 1][j].kind)
-                if (_board[i][j].kind == _board[i - 1][j].kind)
-                    for(int n = -1; n <= 1; ++n) _board[i + n][j].match++;
-            
-            if (_board[i][j].kind == _board[i][j + 1].kind)
-                if (_board[i][j].kind == _board[i][j - 1].kind)
-                    for(int n = -1; n <= 1; ++n) _board[i][j + n].match++;
-        }
+        _matchFinder();
         
         //Moving animation
         _runAnimation();
@@ -89,25 +69,7 @@ void GameDirector::run() {
         }
         
         //Update grid
-        if (!_isMoving) {
-            for(int i = 7; i > 0; --i)
-                for(int j = 1; j <= 6; ++j)
-                    if (_board[i][j].match)
-                        for(int n = i; n > 0; --n)
-                            if (!_board[n][j].match) {
-                                swapTiles(_board, _board[n][j], _board[i][j]);
-                                break;
-                            }
-            
-            for(int j = 1; j <= 6; ++j)
-                for(int i = 7, n = 0; i > 0; --i)
-                    if (_board[i][j].match) {
-                        _board[i][j].kind = std::rand() % 5;
-                        _board[i][j].y = -ts * n++;
-                        _board[i][j].match = 0;
-                        _board[i][j].alpha = 255;
-                    }
-        }
+        _updateBoard();
         
         //////draw///////
         app.draw(background);
@@ -125,12 +87,23 @@ void GameDirector::run() {
     }
 }
 
+GameDirector& GameDirector::setAnimationSpeed(int speed) {
+    _speed = speed;
+    return *this;
+}
+
+GameDirector GameDirector::instance() {
+    static GameDirector _game;
+    return _game;
+}
+
+//Private methods implementations below
 void GameDirector::_runAnimation() {
     _isMoving = false;
     BOARD_LOOP {
         Gem &p = _board[i][j];
         int dx{}, dy{};
-        for(int n = 0; n < _speed; ++n) {  // 10 - speed
+        for(int n = 0; n < _speed; ++n) {
             dx = p.x - p.col * ts;
             dy = p.y - p.row * ts;
             if (dx) p.x -= dx / std::abs(dx);
@@ -141,12 +114,52 @@ void GameDirector::_runAnimation() {
     }
 }
 
-GameDirector& GameDirector::setAnimationSpeed(int speed) {
-    _speed = speed;
-    return *this;
+void GameDirector::_matchFinder() {
+    BOARD_LOOP {
+          if (_board[i][j].kind == _board[i + 1][j].kind)
+              if (_board[i][j].kind == _board[i - 1][j].kind)
+                  for(int n = -1; n <= 1; ++n) _board[i + n][j].match++;
+          
+          if (_board[i][j].kind == _board[i][j + 1].kind)
+              if (_board[i][j].kind == _board[i][j - 1].kind)
+                  for(int n = -1; n <= 1; ++n) _board[i][j + n].match++;
+      }
 }
 
-GameDirector GameDirector::instance() {
-    static GameDirector _game;
-    return _game;
+void GameDirector::_updateBoard() {
+    if (!_isMoving) {
+           for(int i = 7; i > 0; --i)
+               for(int j = 1; j <= 6; ++j)
+                   if (_board[i][j].match)
+                       for(int n = i; n > 0; --n)
+                           if (!_board[n][j].match) {
+                               swapTiles(_board, _board[n][j], _board[i][j]);
+                               break;
+                           }
+               
+       for(int j = 1; j <= 6; ++j)
+           for(int i = 7, n = 0; i > 0; --i)
+               if (_board[i][j].match) {
+                   _board[i][j].kind = std::rand() % 5;
+                   _board[i][j].y = -ts * n++;
+                   _board[i][j].match = 0;
+                   _board[i][j].alpha = 255;
+               }
+       }
+}
+
+void GameDirector::_clickHandler() {
+    if (_click == 1) {
+        _x0 = _pos.x / ts + 1;
+        _y0 = _pos.y / ts + 1;
+    }
+    
+    if (_click == 2) {
+        _x = _pos.x / ts + 1;
+        _y = _pos.y / ts + 1;
+        if (abs(_x - _x0) + abs(_y - _y0) == 1) {
+            swapTiles(_board, _board[_y0][_x0], _board[_y][_x]); _isSwap = true; _click = 0;
+        }
+        else _click = 1;
+    }
 }

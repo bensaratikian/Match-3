@@ -17,16 +17,19 @@ class GameDirector final {
     GameDirector(GameDirector&&) = default;
     
     void _runAnimation();
-
+    void _matchFinder();
+    void _updateBoard();
+    void _clickHandler();
+    
 public:
     static GameDirector instance();
     void run();
     GameDirector& setAnimationSpeed(int speed);
 private:
     Board _board;
+    Vector2i _pos;
     int _animationSpeed;
     bool _isSwap = false, _isMoving = false;
-    Vector2i _pos;
     int _x0{}, _y0{}, _x{}, _y{}, _click{}, _speed{10};
 };
 
