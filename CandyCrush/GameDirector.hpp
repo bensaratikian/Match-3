@@ -20,17 +20,20 @@ class GameDirector final {
     void _matchFinder();
     void _updateBoard();
     void _clickHandler();
+    void _swapBack();
+    void _deleteMatchedGems();
     
 public:
     static GameDirector instance();
     void run();
     GameDirector& setAnimationSpeed(int speed);
+    
 private:
     Board _board;
     Vector2i _pos;
     int _animationSpeed;
     bool _isSwap = false, _isMoving = false;
-    int _x0{}, _y0{}, _x{}, _y{}, _click{}, _speed{10};
+    int _x0{}, _y0{}, _x{}, _y{}, _click{}, _speed{7};
 };
 
 #endif /* Game_hpp */

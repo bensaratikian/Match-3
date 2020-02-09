@@ -7,15 +7,12 @@
 //
 
 #include "GameDirector.hpp"
-#include "Gem.h"
-
-using namespace sf;
 
 void GameDirector::run() {
     RenderWindow app(VideoMode(744, 1080), "Match-3 Game!", Style::Close);
     app.setFramerateLimit(60);
     
-    Texture t1,t2;
+    Texture t1, t2;
     t1.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/Background.png");
     t2.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/gems.png");
     Sprite background(t1), gems(t2);
@@ -42,36 +39,24 @@ void GameDirector::run() {
                 }
         }
         
-        // mouse click
+        // mouse click handler
         _clickHandler();
         
-        //Match finding
+        //Finding matches
         _matchFinder();
         
-        //Moving animation
+        //Run animations
         _runAnimation();
         
-        //Deleting amimation
-        if (!_isMoving)
-            BOARD_LOOP
-            if (_board[i][j].match && _board[i][j].alpha >= 10) {
-                _board[i][j].alpha -= 10; _isMoving = true;
-            }
+        //Deleting amimation if matched
+        _deleteMatchedGems();
+                
+        //Swap back if gems do not match
+        _swapBack();
         
-        //Get score
-        int score = 0;
-        BOARD_LOOP
-        score += _board[i][j].match;
-        
-        //Second swap if no match
-        if (_isSwap && !_isMoving) {
-            if (!score) swapTiles(_board, _board[_y0][_x0], _board[_y][_x]); _isSwap = 0;
-        }
-        
-        //Update grid
+        //Update board
         _updateBoard();
         
-        //////draw///////
         app.draw(background);
         
         BOARD_LOOP {
@@ -163,3 +148,22 @@ void GameDirector::_clickHandler() {
         else _click = 1;
     }
 }
+
+void GameDirector::_swapBack() {
+    int score = 0;
+    BOARD_LOOP
+    score += _board[i][j].match;
+    
+    if (_isSwap && !_isMoving) {
+        if (!score) swapTiles(_board, _board[_y0][_x0], _board[_y][_x]); _isSwap = 0;
+    }
+}
+
+void GameDirector::_deleteMatchedGems() {
+    if (!_isMoving)
+    BOARD_LOOP
+    if (_board[i][j].match && _board[i][j].alpha >= 10) {
+        _board[i][j].alpha -= 10; _isMoving = true;
+    }
+}
+

@@ -15,14 +15,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		B5CE2EEA23EEFEE30045FD73 /* CopyFiles */ = {
+		B5CE2EEA23EEFEE30045FD73 /* Copy Files */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
+			buildActionMask = 12;
+			dstPath = "";
 			dstSubfolderSpec = 0;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			name = "Copy Files";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -35,6 +36,7 @@
 		B5CE2EF823EEFF2C0045FD73 /* libsfml-graphics.2.5.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-graphics.2.5.1.dylib"; path = "../../../../usr/local/Cellar/sfml/2.5.1/lib/libsfml-graphics.2.5.1.dylib"; sourceTree = "<group>"; };
 		B5CE2EF923EEFF2C0045FD73 /* libsfml-window.2.5.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-window.2.5.1.dylib"; path = "../../../../usr/local/Cellar/sfml/2.5.1/lib/libsfml-window.2.5.1.dylib"; sourceTree = "<group>"; };
 		B5CE2EFD23EFFFB30045FD73 /* Gem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Gem.h; sourceTree = "<group>"; };
+		FF889EE223F0725C004036D7 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = text; path = Resources; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 		B5CE2EE323EEFEE30045FD73 = {
 			isa = PBXGroup;
 			children = (
+				FF889EE223F0725C004036D7 /* Resources */,
 				B5CE2EEE23EEFEE30045FD73 /* CandyCrush */,
 				B5CE2EED23EEFEE30045FD73 /* Products */,
 				B5CE2EF623EEFF2B0045FD73 /* Frameworks */,
@@ -98,7 +101,7 @@
 			buildPhases = (
 				B5CE2EE823EEFEE30045FD73 /* Sources */,
 				B5CE2EE923EEFEE30045FD73 /* Frameworks */,
-				B5CE2EEA23EEFEE30045FD73 /* CopyFiles */,
+				B5CE2EEA23EEFEE30045FD73 /* Copy Files */,
 			);
 			buildRules = (
 			);
