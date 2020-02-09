@@ -31,7 +31,6 @@ public:
 private:
     Board _board;
     Vector2i _pos;
-    int _animationSpeed;
     bool _isSwap = false, _isMoving = false;
     int _x0{}, _y0{}, _x{}, _y{}, _click{}, _speed{7};
 };

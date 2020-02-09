@@ -9,7 +9,7 @@
 #include "GameDirector.hpp"
 
 void GameDirector::run() {
-    RenderWindow app(VideoMode(744, 1080), "Match-3 Game!", Style::Close);
+    RenderWindow app(VideoMode(744, 1080), "My Game", Style::Close);
     app.setFramerateLimit(60);
     
     Texture t1, t2;
@@ -21,8 +21,8 @@ void GameDirector::run() {
         _board[i][j].kind = std::rand() % 3;
         _board[i][j].col = j;
         _board[i][j].row = i;
-        _board[i][j].x = j * ts;
-        _board[i][j].y = i * ts;
+        _board[i][j].x = j * tileSize;
+        _board[i][j].y = i * tileSize;
     }
     
     while (app.isOpen()) {
@@ -64,7 +64,7 @@ void GameDirector::run() {
             gems.setTextureRect(IntRect(p.kind * 80, 0, 80, 80));
             gems.setColor(Color(255, 255, 255, p.alpha));
             gems.setPosition(p.x, p.y);
-            gems.move(offset.x - ts, offset.y - ts);
+            gems.move(offset.x - tileSize, offset.y - tileSize);
             app.draw(gems);
         }
         
@@ -82,15 +82,15 @@ GameDirector& GameDirector::instance() {
     return game;
 }
 
-//Private methods implementations below
+// MARK: Private methods implementations
 void GameDirector::_runAnimation() {
     _isMoving = false;
     BOARD_LOOP {
         Gem &p = _board[i][j];
         int dx{}, dy{};
         for(int n = 0; n < _speed; ++n) {
-            dx = p.x - p.col * ts;
-            dy = p.y - p.row * ts;
+            dx = p.x - p.col * tileSize;
+            dy = p.y - p.row * tileSize;
             if (dx) p.x -= dx / std::abs(dx);
             else if (dy) p.y -= dy / std::abs(dy);
             else break;
@@ -126,7 +126,7 @@ void GameDirector::_updateBoard() {
            for(int i = 7, n = 0; i > 0; --i)
                if (_board[i][j].match) {
                    _board[i][j].kind = std::rand() % 5;
-                   _board[i][j].y = -ts * n++;
+                   _board[i][j].y = -tileSize * n++;
                    _board[i][j].match = 0;
                    _board[i][j].alpha = 255;
                }
@@ -135,15 +135,17 @@ void GameDirector::_updateBoard() {
 
 void GameDirector::_clickHandler() {
     if (_click == 1) {
-        _x0 = _pos.x / ts + 1;
-        _y0 = _pos.y / ts + 1;
+        _x0 = _pos.x / tileSize + 1;
+        _y0 = _pos.y / tileSize + 1;
     }
     
     if (_click == 2) {
-        _x = _pos.x / ts + 1;
-        _y = _pos.y / ts + 1;
+        _x = _pos.x / tileSize + 1;
+        _y = _pos.y / tileSize + 1;
         if (abs(_x - _x0) + abs(_y - _y0) == 1) {
-            swapTiles(_board, _board[_y0][_x0], _board[_y][_x]); _isSwap = true; _click = 0;
+            swapTiles(_board, _board[_y0][_x0], _board[_y][_x]);
+            _isSwap = true;
+            _click = 0;
         }
         else _click = 1;
     }

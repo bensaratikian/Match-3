@@ -14,7 +14,7 @@
 
 using namespace sf;
 
-const int ts = 87; //tile size
+const int tileSize = 87;
 const Vector2i offset(115, 290);
 
 struct Gem {
@@ -33,10 +33,12 @@ struct Gem {
 
 using Board = std::array<std::array<Gem, 8>, 8>;
 
+//TODO: Make GameDirector private method
 constexpr bool isInInterval(const Vector2i &vec) noexcept {
     return (vec.x >= 112 && vec.x <= 633) && (vec.y >= 286 && vec.y <= 894);
 }
 
+//TODO: Make GameDirector private method
 inline void swapTiles(Board &grid, Gem p1, Gem p2) noexcept {
     std::swap(p1.col, p2.col);
     std::swap(p1.row, p2.row);
