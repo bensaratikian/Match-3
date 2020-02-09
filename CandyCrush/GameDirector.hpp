@@ -13,8 +13,8 @@
 
 class GameDirector final {
     GameDirector() = default;
-    GameDirector(const GameDirector&) = default;
-    GameDirector(GameDirector&&) = default;
+    GameDirector(const GameDirector&);
+    GameDirector(GameDirector&&);
     
     void _runAnimation();
     void _matchFinder();
@@ -24,7 +24,7 @@ class GameDirector final {
     void _deleteMatchedGems();
     
 public:
-    static GameDirector instance();
+    static GameDirector& instance();
     void run();
     GameDirector& setAnimationSpeed(int speed);
     

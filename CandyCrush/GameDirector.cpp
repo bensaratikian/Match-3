@@ -77,7 +77,7 @@ GameDirector& GameDirector::setAnimationSpeed(int speed) {
     return *this;
 }
 
-GameDirector GameDirector::instance() {
+GameDirector& GameDirector::instance() {
     static GameDirector _game;
     return _game;
 }
