@@ -34,6 +34,14 @@ constexpr bool isInInterval(const Vector2i &vec) noexcept {
     return (vec.x >= 112 && vec.x <= 633) && (vec.y >= 286 && vec.y <= 894);
 }
 
+void swapTiles(Board& grid, Gem p1, Gem p2) noexcept {
+    std::swap(p1.col, p2.col);
+    std::swap(p1.row, p2.row);
+    
+    grid[p1.row][p1.col] = p1;
+    grid[p2.row][p2.col] = p2;
+}
+
 #define BOARD_LOOP \
 for (int i = 1; i <= 7; ++i) \
 for (int j = 1; j <= 6; ++j) \
