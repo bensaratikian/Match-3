@@ -9,6 +9,9 @@
 #ifndef Gem_h
 #define Gem_h
 
+#include <SFML/Graphics.hpp>
+#include <array>
+
 using namespace sf;
 
 const int ts = 87; //tile size
@@ -34,7 +37,7 @@ constexpr bool isInInterval(const Vector2i &vec) noexcept {
     return (vec.x >= 112 && vec.x <= 633) && (vec.y >= 286 && vec.y <= 894);
 }
 
-void swapTiles(Board& grid, Gem p1, Gem p2) noexcept {
+inline void swapTiles(Board &grid, Gem p1, Gem p2) noexcept {
     std::swap(p1.col, p2.col);
     std::swap(p1.row, p2.row);
     

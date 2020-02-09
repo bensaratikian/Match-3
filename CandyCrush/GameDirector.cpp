@@ -6,15 +6,12 @@
 //  Copyright © 2020 Ben. All rights reserved.
 //
 
-#include <SFML/Graphics.hpp>
 #include "GameDirector.hpp"
-#include <array>
 #include "Gem.h"
 
 using namespace sf;
 
 void GameDirector::run() {
-    Board board;
     RenderWindow app(VideoMode(744, 1080), "Match-3 Game!", Style::None);
     app.setFramerateLimit(60);
     
@@ -24,17 +21,12 @@ void GameDirector::run() {
     Sprite background(t1), gems(t2);
     
     BOARD_LOOP {
-        board[i][j].kind = std::rand() % 3;
-        board[i][j].col = j;
-        board[i][j].row = i;
-        board[i][j].x = j * ts;
-        board[i][j].y = i * ts;
+        _board[i][j].kind = std::rand() % 3;
+        _board[i][j].col = j;
+        _board[i][j].row = i;
+        _board[i][j].x = j * ts;
+        _board[i][j].y = i * ts;
     }
-    
-    int x0{}, y0{}, x{}, y{};
-    int click = 0;
-    Vector2i pos;
-    bool isSwap = false, isMoving = false;
     
     while (app.isOpen()) {
         Event e;
@@ -45,87 +37,75 @@ void GameDirector::run() {
             if (e.type == Event::MouseButtonPressed)
                 if (static_cast<int>(e.key.code) == static_cast<int>(Mouse::Left)) {
                     const Vector2i mousePos = Mouse::getPosition(app);
-                    if (!isSwap && !isMoving && isInInterval(mousePos)) ++click;
-                    pos = mousePos - offset;
+                    if (!_isSwap && !_isMoving && isInInterval(mousePos)) ++_click;
+                    _pos = mousePos - offset;
                 }
         }
         
         // mouse click
-        if (click == 1) {
-            x0 = pos.x / ts + 1;
-            y0 = pos.y / ts + 1;
+        if (_click == 1) {
+            _x0 = _pos.x / ts + 1;
+            _y0 = _pos.y / ts + 1;
         }
         
-        if (click == 2) {
-            x = pos.x / ts + 1;
-            y = pos.y / ts + 1;
-            if (abs(x - x0) + abs(y - y0) == 1) {
-                swapTiles(board, board[y0][x0], board[y][x]); isSwap = true; click = 0;
+        if (_click == 2) {
+            _x = _pos.x / ts + 1;
+            _y = _pos.y / ts + 1;
+            if (abs(_x - _x0) + abs(_y - _y0) == 1) {
+                swapTiles(_board, _board[_y0][_x0], _board[_y][_x]); _isSwap = true; _click = 0;
             }
-            else click = 1;
+            else _click = 1;
         }
         
         //Match finding
         BOARD_LOOP {
-            if (board[i][j].kind == board[i + 1][j].kind)
-                if (board[i][j].kind == board[i - 1][j].kind)
-                    for(int n = -1; n <= 1; ++n) board[i + n][j].match++;
+            if (_board[i][j].kind == _board[i + 1][j].kind)
+                if (_board[i][j].kind == _board[i - 1][j].kind)
+                    for(int n = -1; n <= 1; ++n) _board[i + n][j].match++;
             
-            if (board[i][j].kind == board[i][j + 1].kind)
-                if (board[i][j].kind == board[i][j - 1].kind)
-                    for(int n = -1; n <= 1; ++n) board[i][j + n].match++;
+            if (_board[i][j].kind == _board[i][j + 1].kind)
+                if (_board[i][j].kind == _board[i][j - 1].kind)
+                    for(int n = -1; n <= 1; ++n) _board[i][j + n].match++;
         }
         
         //Moving animation
-        isMoving = false;
-        BOARD_LOOP {
-            Gem &p = board[i][j];
-            int dx{}, dy{};
-            for(int n = 0; n < 10; ++n) {  // 10 - speed
-                dx = p.x - p.col * ts;
-                dy = p.y - p.row * ts;
-                if (dx) p.x -= dx / std::abs(dx);
-                else if (dy) p.y -= dy / std::abs(dy);
-                else break;
-            }
-            if (dx || dy) isMoving = true;
-        }
+        _runAnimation();
         
         //Deleting amimation
-        if (!isMoving)
+        if (!_isMoving)
             BOARD_LOOP
-            if (board[i][j].match && board[i][j].alpha >= 10) {
-                board[i][j].alpha -= 10; isMoving = true;
+            if (_board[i][j].match && _board[i][j].alpha >= 10) {
+                _board[i][j].alpha -= 10; _isMoving = true;
             }
         
         //Get score
         int score = 0;
         BOARD_LOOP
-        score += board[i][j].match;
+        score += _board[i][j].match;
         
         //Second swap if no match
-        if (isSwap && !isMoving) {
-            if (!score) swapTiles(board, board[y0][x0], board[y][x]); isSwap = 0;
+        if (_isSwap && !_isMoving) {
+            if (!score) swapTiles(_board, _board[_y0][_x0], _board[_y][_x]); _isSwap = 0;
         }
         
         //Update grid
-        if (!isMoving) {
+        if (!_isMoving) {
             for(int i = 7; i > 0; --i)
                 for(int j = 1; j <= 6; ++j)
-                    if (board[i][j].match)
+                    if (_board[i][j].match)
                         for(int n = i; n > 0; --n)
-                            if (!board[n][j].match) {
-                                swapTiles(board, board[n][j], board[i][j]);
+                            if (!_board[n][j].match) {
+                                swapTiles(_board, _board[n][j], _board[i][j]);
                                 break;
                             }
             
             for(int j = 1; j <= 6; ++j)
                 for(int i = 7, n = 0; i > 0; --i)
-                    if (board[i][j].match) {
-                        board[i][j].kind = std::rand() % 5;
-                        board[i][j].y = -ts * n++;
-                        board[i][j].match = 0;
-                        board[i][j].alpha = 255;
+                    if (_board[i][j].match) {
+                        _board[i][j].kind = std::rand() % 5;
+                        _board[i][j].y = -ts * n++;
+                        _board[i][j].match = 0;
+                        _board[i][j].alpha = 255;
                     }
         }
         
@@ -133,7 +113,7 @@ void GameDirector::run() {
         app.draw(background);
         
         BOARD_LOOP {
-            const Gem &p = board[i][j];
+            const Gem &p = _board[i][j];
             gems.setTextureRect(IntRect(p.kind * 80, 0, 80, 80));
             gems.setColor(Color(255, 255, 255, p.alpha));
             gems.setPosition(p.x, p.y);
@@ -143,6 +123,27 @@ void GameDirector::run() {
         
         app.display();
     }
+}
+
+void GameDirector::_runAnimation() {
+    _isMoving = false;
+    BOARD_LOOP {
+        Gem &p = _board[i][j];
+        int dx{}, dy{};
+        for(int n = 0; n < _speed; ++n) {  // 10 - speed
+            dx = p.x - p.col * ts;
+            dy = p.y - p.row * ts;
+            if (dx) p.x -= dx / std::abs(dx);
+            else if (dy) p.y -= dy / std::abs(dy);
+            else break;
+        }
+        if (dx || dy) _isMoving = true;
+    }
+}
+
+GameDirector& GameDirector::setAnimationSpeed(int speed) {
+    _speed = speed;
+    return *this;
 }
 
 GameDirector GameDirector::instance() {
