@@ -25,8 +25,8 @@ class GameDirector final {
     
 public:
     static GameDirector& instance();
-    void run();
     GameDirector& setAnimationSpeed(int speed);
+    void run();
     
 private:
     Board _board;

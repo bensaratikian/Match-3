@@ -78,8 +78,8 @@ GameDirector& GameDirector::setAnimationSpeed(int speed) {
 }
 
 GameDirector& GameDirector::instance() {
-    static GameDirector _game;
-    return _game;
+    static GameDirector game;
+    return game;
 }
 
 //Private methods implementations below
