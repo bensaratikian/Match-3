@@ -54,8 +54,10 @@ void GameDirector::run() {
             if (e.type == Event::MouseButtonPressed)
                 if (static_cast<int>(e.key.code) == static_cast<int>(Mouse::Left)) {
                     const Vector2i mousePos = Mouse::getPosition(app);
-                    if (!_isSwap && !_isMoving && _contains(mousePos, {112, 894}, {633, 286})) ++_click;
-                    _pos = mousePos - _offset;
+                    if (!_isSwap && !_isMoving && _contains(mousePos, {112, 894}, {633, 286})) {
+                        ++_click;
+                        _pos = mousePos - _offset;
+                    }
                 }
         }
         
@@ -210,7 +212,6 @@ void GameDirector::_displayMainWindow(RenderWindow& app) {
     Sprite mainWindow(t);
     bool breakLoop = false;
     while (app.isOpen()) {
-        
         Event e;
         while (app.pollEvent(e)) {
             if (e.type == Event::Closed)
@@ -221,7 +222,6 @@ void GameDirector::_displayMainWindow(RenderWindow& app) {
                     breakLoop = true;
                 }
         }
-        
         app.draw(mainWindow);
         app.display();
         if (breakLoop) break;
