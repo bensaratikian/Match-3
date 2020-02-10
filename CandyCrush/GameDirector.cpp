@@ -7,6 +7,7 @@
 //
 
 #include "GameDirector.hpp"
+#include <tuple>
 
 using namespace sf;
 
@@ -28,6 +29,8 @@ GameDirector::GameDirector()
 void GameDirector::run() {
     RenderWindow app(VideoMode(744, 1080), "My Game", Style::Close);
     app.setFramerateLimit(60);
+    
+    _displayMainWindow(app);
     
     Texture t1, t2;
     t1.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/Background.png");
@@ -51,7 +54,7 @@ void GameDirector::run() {
             if (e.type == Event::MouseButtonPressed)
                 if (static_cast<int>(e.key.code) == static_cast<int>(Mouse::Left)) {
                     const Vector2i mousePos = Mouse::getPosition(app);
-                    if (!_isSwap && !_isMoving && _isInInterval(mousePos)) ++_click;
+                    if (!_isSwap && !_isMoving && _contains(mousePos, {112, 894}, {633, 286})) ++_click;
                     _pos = mousePos - _offset;
                 }
         }
@@ -195,7 +198,36 @@ void GameDirector::_swapTiles(Gem p1, Gem p2) noexcept {
     _board[p2.row][p2.col] = p2;
 }
 
-bool GameDirector::_isInInterval(const Vector2i &vec) noexcept {
-    return (vec.x >= 112 && vec.x <= 633) && (vec.y >= 286 && vec.y <= 894);
+bool GameDirector::_contains(const Vector2i &vec,
+                                 const std::pair<int, int> &lowerLeft,
+                                 const std::pair<int, int> &upperRight) noexcept {
+    return (vec.x >= lowerLeft.first && vec.x <= upperRight.first) && (vec.y >= upperRight.second && vec.y <= lowerLeft.second);
 }
+
+void GameDirector::_displayMainWindow(RenderWindow& app) {
+    Texture t;
+    t.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/mainWndow.png");
+    Sprite mainWindow(t);
+    bool breakLoop = false;
+    while (app.isOpen()) {
+        
+        Event e;
+        while (app.pollEvent(e)) {
+            if (e.type == Event::Closed)
+                app.close();
+            
+            if (e.type == Event::MouseButtonPressed)
+                if (static_cast<int>(e.key.code) == static_cast<int>(Mouse::Left) && _contains(Mouse::getPosition(app), {190, 730}, {558, 640})) {
+                    breakLoop = true;
+                }
+        }
+        
+        app.draw(mainWindow);
+        app.display();
+        if(breakLoop) break;
+        
+    }
+    app.clear();
+}
+
 

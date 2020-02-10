@@ -23,7 +23,8 @@ class GameDirector final {
     void _swapBack();
     void _deleteMatchedGems();
     void _swapTiles(Gem p1, Gem p2) noexcept;
-    bool _isInInterval(const sf::Vector2i &vec) noexcept;
+    bool _contains(const sf::Vector2i &vec, const std::pair<int, int> &lowerLeft, const std::pair<int, int> &upperRight) noexcept;
+    void _displayMainWindow(sf::RenderWindow&);
     
 public:
     static GameDirector& instance();
