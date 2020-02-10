@@ -104,7 +104,7 @@ GameDirector& GameDirector::instance() {
 
 // MARK: Private methods implementations
 
-void GameDirector::_runAnimation() {
+void GameDirector::_runAnimation() noexcept {
     _isMoving = false;
     BOARD_LOOP {
         Gem &p = _board[i][j];
@@ -120,7 +120,7 @@ void GameDirector::_runAnimation() {
     }
 }
 
-void GameDirector::_matchFinder() {
+void GameDirector::_matchFinder() noexcept {
     BOARD_LOOP {
           if (_board[i][j].kind == _board[i + 1][j].kind)
               if (_board[i][j].kind == _board[i - 1][j].kind)
@@ -132,7 +132,7 @@ void GameDirector::_matchFinder() {
       }
 }
 
-void GameDirector::_updateBoard() {
+void GameDirector::_updateBoard() noexcept {
     if (!_isMoving) {
            for(int i = 7; i > 0; --i)
                for(int j = 1; j <= 6; ++j)
@@ -154,7 +154,7 @@ void GameDirector::_updateBoard() {
        }
 }
 
-void GameDirector::_clickHandler() {
+void GameDirector::_clickHandler() noexcept {
     if (_click == 1) {
         _x0 = _pos.x / _tileSize + 1;
         _y0 = _pos.y / _tileSize + 1;
@@ -172,7 +172,7 @@ void GameDirector::_clickHandler() {
     }
 }
 
-void GameDirector::_swapBack() {
+void GameDirector::_swapBack() noexcept {
     int score = 0;
     BOARD_LOOP
     score += _board[i][j].match;
@@ -182,7 +182,7 @@ void GameDirector::_swapBack() {
     }
 }
 
-void GameDirector::_deleteMatchedGems() {
+void GameDirector::_deleteMatchedGems() noexcept {
     if (!_isMoving)
     BOARD_LOOP
     if (_board[i][j].match && _board[i][j].alpha >= 10) {
@@ -199,8 +199,8 @@ void GameDirector::_swapTiles(Gem p1, Gem p2) noexcept {
 }
 
 bool GameDirector::_contains(const Vector2i &vec,
-                                 const std::pair<int, int> &lowerLeft,
-                                 const std::pair<int, int> &upperRight) noexcept {
+                             const std::pair<int, int> &lowerLeft,
+                             const std::pair<int, int> &upperRight) noexcept {
     return (vec.x >= lowerLeft.first && vec.x <= upperRight.first) && (vec.y >= upperRight.second && vec.y <= lowerLeft.second);
 }
 
@@ -224,7 +224,7 @@ void GameDirector::_displayMainWindow(RenderWindow& app) {
         
         app.draw(mainWindow);
         app.display();
-        if(breakLoop) break;
+        if (breakLoop) break;
         
     }
     app.clear();
