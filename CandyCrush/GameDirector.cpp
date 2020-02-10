@@ -8,6 +8,8 @@
 
 #include "GameDirector.hpp"
 
+using namespace sf;
+
 GameDirector::GameDirector()
 : _x0{}
 , _y0{}

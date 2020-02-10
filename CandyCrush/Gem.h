@@ -12,11 +12,6 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 
-using namespace sf;
-
-//const int tileSize = 87;
-//const Vector2i offset(115, 290);
-
 struct Gem {
     int x, y, col, row, kind, match, alpha;
     

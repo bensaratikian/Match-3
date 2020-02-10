@@ -23,7 +23,7 @@ class GameDirector final {
     void _swapBack();
     void _deleteMatchedGems();
     void _swapTiles(Gem p1, Gem p2) noexcept;
-    bool _isInInterval(const Vector2i &vec) noexcept;
+    bool _isInInterval(const sf::Vector2i &vec) noexcept;
     
 public:
     static GameDirector& instance();
@@ -32,8 +32,8 @@ public:
     
 private:
     Board _board;
-    Vector2i _pos;
-    Vector2i _offset;
+    sf::Vector2i _pos;
+    sf::Vector2i _offset;
     bool _isSwap, _isMoving;
     int _x0, _y0, _x, _y, _click, _speed, _tileSize;
 };
