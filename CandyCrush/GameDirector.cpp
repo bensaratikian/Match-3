@@ -68,7 +68,7 @@ void GameDirector::run() {
         _matchFinder();
         
         //Run animations
-        _runAnimation();
+        _runAnimations();
         
         //Deleting amimation if matched
         _deleteMatchedGems();
@@ -106,7 +106,7 @@ GameDirector& GameDirector::instance() {
 
 // MARK: Private methods implementations
 
-void GameDirector::_runAnimation() noexcept {
+void GameDirector::_runAnimations() noexcept {
     _isMoving = false;
     BOARD_LOOP {
         Gem &p = _board[i][j];

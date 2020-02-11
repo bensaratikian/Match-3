@@ -16,15 +16,17 @@ class GameDirector final {
     GameDirector(const GameDirector&) = delete;
     GameDirector(GameDirector&&) = delete;
     
-    void _runAnimation() noexcept;
+    void _runAnimations() noexcept;
     void _matchFinder() noexcept;
     void _updateBoard() noexcept;
     void _clickHandler() noexcept;
     void _swapBack() noexcept;
     void _deleteMatchedGems() noexcept;
     void _swapTiles(Gem p1, Gem p2) noexcept;
-    bool _contains(const sf::Vector2i &vec, const std::pair<int, int> &lowerLeft, const std::pair<int, int> &upperRight) noexcept;
     void _displayMainWindow(sf::RenderWindow&);
+    bool _contains(const sf::Vector2i &vec,
+                   const std::pair<int, int> &lowerLeft,
+                   const std::pair<int, int> &upperRight) noexcept;
     
 public:
     static GameDirector& instance();
