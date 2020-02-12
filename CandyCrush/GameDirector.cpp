@@ -136,8 +136,8 @@ void GameDirector::_matchFinder() noexcept {
 
 void GameDirector::_updateBoard() noexcept {
     if (!_isMoving) {
-           for(int i = 7; i > 0; --i)
-               for(int j = 1; j <= 6; ++j)
+           for (int i = 7; i > 0; --i)
+               for (int j = 1; j <= 6; ++j)
                    if (_board[i][j].match)
                        for(int n = i; n > 0; --n)
                            if (!_board[n][j].match) {
@@ -145,8 +145,8 @@ void GameDirector::_updateBoard() noexcept {
                                break;
                            }
                
-       for(int j = 1; j <= 6; ++j)
-           for(int i = 7, n = 0; i > 0; --i)
+       for (int j = 1; j <= 6; ++j)
+           for (int i = 7, n = 0; i > 0; --i)
                if (_board[i][j].match) {
                    _board[i][j].kind = std::rand() % 5;
                    _board[i][j].y = -_tileSize * n++;
@@ -180,7 +180,7 @@ void GameDirector::_swapBack() noexcept {
     score += _board[i][j].match;
     
     if (_isSwap && !_isMoving) {
-        if (!score) _swapTiles(_board[_y0][_x0], _board[_y][_x]); _isSwap = 0;
+        if (!score) _swapTiles(_board[_y0][_x0], _board[_y][_x]); _isSwap = false;
     }
 }
 
@@ -196,14 +196,16 @@ void GameDirector::_swapTiles(Gem p1, Gem p2) noexcept {
     std::swap(p1.col, p2.col);
     std::swap(p1.row, p2.row);
     
-    _board[p1.row][p1.col] = p1;
-    _board[p2.row][p2.col] = p2;
+    _board[p1.row][p1.col] = std::move(p1);
+    _board[p2.row][p2.col] = std::move(p2);
 }
 
 bool GameDirector::_contains(const Vector2i &vec,
                              const std::pair<int, int> &lowerLeft,
                              const std::pair<int, int> &upperRight) noexcept {
-    return (vec.x >= lowerLeft.first && vec.x <= upperRight.first) && (vec.y >= upperRight.second && vec.y <= lowerLeft.second);
+    
+    return (vec.x >= lowerLeft.first && vec.x <= upperRight.first) &&
+           (vec.y >= upperRight.second && vec.y <= lowerLeft.second);
 }
 
 void GameDirector::_displayMainWindow(RenderWindow& app) {
