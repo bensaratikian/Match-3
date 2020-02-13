@@ -32,13 +32,16 @@ void GameDirector::run() {
     
     _displayMainWindow(app);
     
-    Texture t1, t2;
+    Texture t1, t2, t3, t4, t5;
     t1.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/Background.png");
     t2.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/gems.png");
-    Sprite background(t1), gems(t2);
+    t3.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/bomb.png");
+    t4.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/v_bomb.png");
+    t5.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/h_bomb.png");
+    Sprite background(t1), gems(t2), bomb(t3), verticalBomb(t4), horizontalBomb(t5);
     
     BOARD_LOOP {
-        _board[i][j].kind = std::rand() % 3;
+        _board[i][j].kind = static_cast<GemType>(std::rand() % 3);
         _board[i][j].col = j;
         _board[i][j].row = i;
         _board[i][j].x = j * _tileSize;
@@ -70,7 +73,7 @@ void GameDirector::run() {
         //Run animations
         _runAnimations();
         
-        //Deleting amimation if matched
+        //Deleting animation if matched
         _deleteMatchedGems();
                 
         //Swap back if gems do not match
@@ -83,23 +86,30 @@ void GameDirector::run() {
         
         BOARD_LOOP {
             const Gem &p = _board[i][j];
-            gems.setTextureRect(IntRect(p.kind * 80, 0, 80, 80));
+            if (p.kind != GemType::None) {
+            gems.setTextureRect(IntRect(static_cast<int>(p.kind) * 80, 0, 80, 80));
             gems.setColor(Color(255, 255, 255, p.alpha));
             gems.setPosition(p.x, p.y);
             gems.move(_offset.x - _tileSize, _offset.y - _tileSize);
             app.draw(gems);
+            } else if (p.bomb == BombType::Normal) {
+                bomb.setColor(Color(255, 255, 255, p.alpha));
+                bomb.setPosition(p.x, p.y);
+                bomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
+                app.draw(bomb);
+            }
         }
         
         app.display();
     }
 }
 
-GameDirector& GameDirector::setAnimationSpeed(int speed) {
+GameDirector& GameDirector::setAnimationSpeed(int speed) noexcept {
     _speed = speed;
     return *this;
 }
 
-GameDirector& GameDirector::instance() {
+GameDirector& GameDirector::instance() noexcept {
     static GameDirector game;
     return game;
 }
@@ -123,6 +133,10 @@ void GameDirector::_runAnimations() noexcept {
 }
 
 void GameDirector::_matchFinder() noexcept {
+    
+    if (!_bombFinder(_x, _y)) _bombFinder(_x0, _y0);
+    
+    
     BOARD_LOOP {
           if (_board[i][j].kind == _board[i + 1][j].kind)
               if (_board[i][j].kind == _board[i - 1][j].kind)
@@ -139,7 +153,7 @@ void GameDirector::_updateBoard() noexcept {
            for (int i = 7; i > 0; --i)
                for (int j = 1; j <= 6; ++j)
                    if (_board[i][j].match)
-                       for(int n = i; n > 0; --n)
+                       for (int n = i - 1; n > 0; --n)
                            if (!_board[n][j].match) {
                                _swapTiles(_board[n][j], _board[i][j]);
                                break;
@@ -148,7 +162,7 @@ void GameDirector::_updateBoard() noexcept {
        for (int j = 1; j <= 6; ++j)
            for (int i = 7, n = 0; i > 0; --i)
                if (_board[i][j].match) {
-                   _board[i][j].kind = std::rand() % 5;
+                   _board[i][j].kind = static_cast<GemType>(std::rand() % 5);
                    _board[i][j].y = -_tileSize * n++;
                    _board[i][j].match = 0;
                    _board[i][j].alpha = 255;
@@ -231,5 +245,62 @@ void GameDirector::_displayMainWindow(RenderWindow& app) {
     }
     app.clear();
 }
+
+bool GameDirector::_bombFinder(int x, int y) noexcept {
+    if (_board[y][x].kind == _board[y][x - 1].kind &&
+        _board[y][x].kind == _board[y - 1][x].kind &&
+        _board[y][x].kind == _board[y - 1][x - 1].kind) {
+        
+        // TODO: Add logic
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Normal;
+        _board[y][x - 1].match++;
+        _board[y - 1][x].match++;
+        _board[y - 1][x - 1].match++;
+        return true;
+        
+    } else if (_board[y][x].kind == _board[y + 1][x].kind &&
+               _board[y][x].kind == _board[y][x - 1].kind &&
+               _board[y][x].kind == _board[y + 1][x - 1].kind) {
+        
+        // TODO: Add logic
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Normal;
+        _board[y + 1][x].match++;
+        _board[y][x - 1].match++;
+        _board[y + 1][x - 1].match++;
+        return true;
+        
+    } else if (_board[y][x].kind == _board[y][x + 1].kind &&
+               _board[y][x].kind == _board[y + 1][x].kind &&
+               _board[y][x].kind == _board[y + 1][x + 1].kind) {
+        
+        //TODO: Add logic
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Normal;
+        _board[y][x + 1].match++;
+        _board[y + 1][x].match++;
+        _board[y + 1][x + 1].match++;
+        return true;
+        
+    } else if (_board[y][x].kind == _board[y - 1][x].kind &&
+               _board[y][x].kind == _board[y - 1][x + 1].kind &&
+               _board[y][x].kind == _board[y][x + 1].kind) {
+        
+        //TODO: Add logic
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Normal;
+        _board[y - 1][x].match++;
+        _board[y - 1][x + 1].match++;
+        _board[y][x + 1].match++;
+        return true;
+    }
+    
+    //TODO: Add vertical and horizontal bomb logic
+    
+    return false;
+    
+}
+
 
 
