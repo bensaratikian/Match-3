@@ -86,18 +86,33 @@ void GameDirector::run() {
         
         BOARD_LOOP {
             const Gem &p = _board[i][j];
-            if (p.kind != GemType::None) {
-            gems.setTextureRect(IntRect(static_cast<int>(p.kind) * 80, 0, 80, 80));
-            gems.setColor(Color(255, 255, 255, p.alpha));
-            gems.setPosition(p.x, p.y);
-            gems.move(_offset.x - _tileSize, _offset.y - _tileSize);
-            app.draw(gems);
-            } else if (p.bomb == BombType::Normal) {
-                bomb.setColor(Color(255, 255, 255, p.alpha));
-                bomb.setPosition(p.x, p.y);
-                bomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
-                app.draw(bomb);
+            
+            switch (p.bomb) {
+                case BombType::None:
+                      gems.setTextureRect(IntRect(static_cast<int>(p.kind) * 80, 0, 80, 80));
+                      gems.setColor(Color(255, 255, 255, p.alpha));
+                      gems.setPosition(p.x, p.y);
+                      gems.move(_offset.x - _tileSize, _offset.y - _tileSize);
+                      app.draw(gems);
+                    break;
+                    
+                case BombType::Normal:
+                    bomb.setColor(Color(255, 255, 255, p.alpha));
+                    bomb.setPosition(p.x, p.y);
+                    bomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
+                    app.draw(bomb);
+                    break;
+                    
+                case BombType::Vertical:
+                    break;
+                    
+                case BombType::Horizontal:
+                    break;
+                    
+                default:
+                    break;
             }
+            
         }
         
         app.display();
@@ -136,14 +151,15 @@ void GameDirector::_matchFinder() noexcept {
     
     if (!_bombFinder(_x, _y)) _bombFinder(_x0, _y0);
     
-    
     BOARD_LOOP {
-          if (_board[i][j].kind == _board[i + 1][j].kind)
-              if (_board[i][j].kind == _board[i - 1][j].kind)
+          if (_board[i][j].kind == _board[i + 1][j].kind &&
+              _board[i][j].kind == _board[i - 1][j].kind &&
+              _board[i][j].bomb == BombType::None)
                   for(int n = -1; n <= 1; ++n) _board[i + n][j].match++;
           
-          if (_board[i][j].kind == _board[i][j + 1].kind)
-              if (_board[i][j].kind == _board[i][j - 1].kind)
+          if (_board[i][j].kind == _board[i][j + 1].kind &&
+              _board[i][j].kind == _board[i][j - 1].kind &&
+              _board[i][j].bomb == BombType::None)
                   for(int n = -1; n <= 1; ++n) _board[i][j + n].match++;
       }
 }
@@ -251,7 +267,6 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
         _board[y][x].kind == _board[y - 1][x].kind &&
         _board[y][x].kind == _board[y - 1][x - 1].kind) {
         
-        // TODO: Add logic
         _board[y][x].kind = GemType::None;
         _board[y][x].bomb = BombType::Normal;
         _board[y][x - 1].match++;
@@ -263,7 +278,6 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
                _board[y][x].kind == _board[y][x - 1].kind &&
                _board[y][x].kind == _board[y + 1][x - 1].kind) {
         
-        // TODO: Add logic
         _board[y][x].kind = GemType::None;
         _board[y][x].bomb = BombType::Normal;
         _board[y + 1][x].match++;
@@ -275,7 +289,6 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
                _board[y][x].kind == _board[y + 1][x].kind &&
                _board[y][x].kind == _board[y + 1][x + 1].kind) {
         
-        //TODO: Add logic
         _board[y][x].kind = GemType::None;
         _board[y][x].bomb = BombType::Normal;
         _board[y][x + 1].match++;
@@ -287,7 +300,6 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
                _board[y][x].kind == _board[y - 1][x + 1].kind &&
                _board[y][x].kind == _board[y][x + 1].kind) {
         
-        //TODO: Add logic
         _board[y][x].kind = GemType::None;
         _board[y][x].bomb = BombType::Normal;
         _board[y - 1][x].match++;
