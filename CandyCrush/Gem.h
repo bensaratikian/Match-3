@@ -12,16 +12,36 @@
 #include <SFML/Graphics.hpp>
 #include <array>
 
+enum class GemType : int {
+    None = -1,
+    PurpuleGem,
+    RedGem,
+    BlueGem,
+    GreenGem,
+    OrangeGem
+};
+
+enum class BombType : int {
+    None = -1,
+    Normal,
+    Vertical,
+    Horizontal
+};
+
 struct Gem {
-    int x, y, col, row, kind, match, alpha;
+    int x, y, col, row, match, alpha;
+    
+    GemType kind;
+    BombType bomb;
     
     Gem()
     : x{}
     , y{}
     , col{}
     , row{}
-    , kind{}
     , match{}
+    , kind{GemType::None}
+    , bomb{BombType::None}
     , alpha{255} {}
     
 };

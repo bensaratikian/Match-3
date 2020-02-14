@@ -24,13 +24,14 @@ class GameDirector final {
     void _deleteMatchedGems() noexcept;
     void _swapTiles(Gem p1, Gem p2) noexcept;
     void _displayMainWindow(sf::RenderWindow&);
+    bool _bombFinder(int x, int y) noexcept;
     bool _contains(const sf::Vector2i &vec,
                    const std::pair<int, int> &lowerLeft,
                    const std::pair<int, int> &upperRight) noexcept;
     
 public:
-    static GameDirector& instance();
-    GameDirector& setAnimationSpeed(int speed);
+    static GameDirector& instance() noexcept;
+    GameDirector& setAnimationSpeed(int speed) noexcept;
     void run();
     
 private:
