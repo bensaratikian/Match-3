@@ -104,9 +104,17 @@ void GameDirector::run() {
                     break;
                     
                 case BombType::Vertical:
+                    verticalBomb.setColor(Color(255, 255, 255, p.alpha));
+                    verticalBomb.setPosition(p.x, p.y);
+                    verticalBomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
+                    app.draw(verticalBomb);
                     break;
                     
                 case BombType::Horizontal:
+                    horizontalBomb.setColor(Color(255, 255, 255, p.alpha));
+                    horizontalBomb.setPosition(p.x, p.y);
+                    horizontalBomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
+                    app.draw(horizontalBomb);
                     break;
                     
                 default:
@@ -190,13 +198,48 @@ void GameDirector::_clickHandler() noexcept {
     if (_click == 1) {
         _x0 = _pos.x / _tileSize + 1;
         _y0 = _pos.y / _tileSize + 1;
+        
+        switch (_board[_y0][_x0].bomb) {
+            case BombType::Normal:
+                _board[_y0][_x0].match++;
+                _board[_y0 - 1][_x0 - 1].match++;
+                _board[_y0 - 1][_x0].match++;
+                _board[_y0 - 1][_x0 + 1].match++;
+                _board[_y0][_x0 - 1].match++;
+                _board[_y0][_x0 + 1].match++;
+                _board[_y0 + 1][_x0 - 1].match++;
+                _board[_y0 + 1][_x0].match++;
+                _board[_y0 + 1][_x0 + 1].match++;
+                
+                _board[_y0][_x0].bomb = BombType::None;
+
+                break;
+                
+            case BombType::Vertical:
+                for (int i = 1; i <= _board[_y0].size(); _board[i++][_x0].match++) {}
+                
+                _board[_y0][_x0].bomb = BombType::None;
+                
+                break;
+                
+            case BombType::Horizontal:
+                
+                for (int i = 1; i <= _board.size(); _board[_y0][i++].match++) {}
+                _board[_y0][_x0].bomb = BombType::None;
+                
+                break;
+                
+            default:
+                break;
+        }
+        
     }
     
     if (_click == 2) {
         _x = _pos.x / _tileSize + 1;
         _y = _pos.y / _tileSize + 1;
         if (abs(_x - _x0) + abs(_y - _y0) == 1) {
-            _swapTiles(_board[_y0][_x0], _board[_y][_x]);
+            _swapTiles(_board[_y0][_x0], _board[_y][_x])g;
             _isSwap = true;
             _click = 0;
         }
@@ -263,6 +306,8 @@ void GameDirector::_displayMainWindow(RenderWindow& app) {
 }
 
 bool GameDirector::_bombFinder(int x, int y) noexcept {
+    
+    // MARK: Normal Bomb Logic
     if (_board[y][x].kind == _board[y][x - 1].kind &&
         _board[y][x].kind == _board[y - 1][x].kind &&
         _board[y][x].kind == _board[y - 1][x - 1].kind) {
@@ -306,9 +351,54 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
         _board[y - 1][x + 1].match++;
         _board[y][x + 1].match++;
         return true;
+        
+    // MARK: Vertical Bomb Logic
+    } else if (_board[y][x].kind == _board[y - 1][x].kind &&
+               _board[y][x].kind == _board[y + 1][x].kind &&
+               _board[y][x].kind == _board[y + 2][x].kind) {
+        
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Vertical;
+        _board[y - 1][x].match++;
+        _board[y + 1][x].match++;
+        _board[y + 2][x].match++;
+        return true;
+        
+    } else if (_board[y][x].kind == _board[y - 2][x].kind &&
+               _board[y][x].kind == _board[y - 1][x].kind &&
+               _board[y][x].kind == _board[y + 1][x].kind) {
+        
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Vertical;
+        _board[y - 2][x].match++;
+        _board[y - 1][x].match++;
+        _board[y + 1][x].match++;
+        return true;
+        
+    // MARK: Horziontal Bomb Logic
+    } else if (_board[y][x].kind == _board[y][x - 2].kind &&
+               _board[y][x].kind == _board[y][x - 1].kind &&
+               _board[y][x].kind == _board[y][x + 1].kind) {
+        
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Horizontal;
+        _board[y - 1][x].match++;
+        _board[y + 1][x].match++;
+        _board[y + 2][x].match++;
+        return true;
+        
+    } else if (_board[y][x].kind == _board[y][x - 1].kind &&
+               _board[y][x].kind == _board[y][x + 1].kind &&
+               _board[y][x].kind == _board[y][x + 2].kind) {
+        
+        _board[y][x].kind = GemType::None;
+        _board[y][x].bomb = BombType::Horizontal;
+        _board[y - 2][x].match++;
+        _board[y - 1][x].match++;
+        _board[y + 1][x].match++;
+        return true;
+        
     }
-    
-    //TODO: Add vertical and horizontal bomb logic
     
     return false;
     
