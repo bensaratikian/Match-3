@@ -210,20 +210,17 @@ void GameDirector::_clickHandler() noexcept {
                 _board[_y0 + 1][_x0 - 1].match++;
                 _board[_y0 + 1][_x0].match++;
                 _board[_y0 + 1][_x0 + 1].match++;
-                
                 _board[_y0][_x0].bomb = BombType::None;
 
                 break;
                 
             case BombType::Vertical:
                 for (int i = 1; i <= _board[_y0].size(); _board[i++][_x0].match++) {}
-                
                 _board[_y0][_x0].bomb = BombType::None;
                 
                 break;
                 
             case BombType::Horizontal:
-                
                 for (int i = 1; i <= _board.size(); _board[_y0][i++].match++) {}
                 _board[_y0][_x0].bomb = BombType::None;
                 
@@ -239,7 +236,8 @@ void GameDirector::_clickHandler() noexcept {
         _x = _pos.x / _tileSize + 1;
         _y = _pos.y / _tileSize + 1;
         if (abs(_x - _x0) + abs(_y - _y0) == 1) {
-            _swapTiles(_board[_y0][_x0], _board[_y][_x])g;
+            if (!_bombFinder(_x, _y)) _bombFinder(_x0, _y0);
+            _swapTiles(_board[_y0][_x0], _board[_y][_x]);
             _isSwap = true;
             _click = 0;
         }
