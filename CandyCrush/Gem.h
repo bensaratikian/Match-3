@@ -14,7 +14,7 @@
 
 enum class GemType : int {
     None = -1,
-    PurpuleGem,
+    PurpuleGem = 1000,
     RedGem,
     BlueGem,
     GreenGem,
@@ -23,7 +23,7 @@ enum class GemType : int {
 
 enum class BombType : int {
     None = -1,
-    Normal,
+    Normal = 1000,
     Vertical,
     Horizontal
 };

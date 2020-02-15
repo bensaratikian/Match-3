@@ -25,7 +25,7 @@ void GameDirector::run() {
     Sprite background(t1), gems(t2), bomb(t3), verticalBomb(t4), horizontalBomb(t5);
     
     BOARD_LOOP {
-        _board[i][j].kind = static_cast<GemType>(std::rand() % 3);
+        _board[i][j].kind = static_cast<GemType>(std::rand() % 3 + 1000);
         _board[i][j].col = j;
         _board[i][j].row = i;
         _board[i][j].x = j * _tileSize;
@@ -73,7 +73,7 @@ void GameDirector::run() {
             
             switch (p.bomb) {
                 case BombType::None:
-                      gems.setTextureRect(IntRect(static_cast<int>(p.kind) * 80, 0, 80, 80));
+                      gems.setTextureRect(IntRect(static_cast<int>(p.kind) % 1000 * 80, 0, 80, 80));
                       gems.setColor(Color(255, 255, 255, p.alpha));
                       gems.setPosition(p.x, p.y);
                       gems.move(_offset.x - _tileSize, _offset.y - _tileSize);

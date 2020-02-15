@@ -68,6 +68,16 @@ void GameDirector::_matchFinder() noexcept {
               _board[i][j].kind == _board[i][j - 1].kind &&
               _board[i][j].bomb == BombType::None)
                   for(int n = -1; n <= 1; ++n) _board[i][j + n].match++;
+        
+          if (_board[i][j].kind == _board[i][j + 1].kind &&
+              _board[i][j].kind == _board[i + 1][j].kind &&
+              _board[i][j].kind == _board[i + 1][j + 1].kind) {
+              
+              _board[i][j + 1].match++;
+              _board[i + 1][j].match++;
+              _board[i + 1][j + 1].match++;
+          }
+
       }
 }
 
@@ -86,7 +96,7 @@ void GameDirector::_updateBoard() noexcept {
            for (int i = 7, n = 0; i > 0; --i)
                if (_board[i][j].match) {
                    _board[i][j].bomb = BombType::None;
-                   _board[i][j].kind = static_cast<GemType>(std::rand() % 5);
+                   _board[i][j].kind = static_cast<GemType>(std::rand() % 5 + 1000);
                    _board[i][j].y = -_tileSize * n++;
                    _board[i][j].match = 0;
                    _board[i][j].alpha = 255;
