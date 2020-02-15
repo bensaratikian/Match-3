@@ -12,6 +12,7 @@
 		B5CE2EFA23EEFF2C0045FD73 /* libsfml-system.2.5.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CE2EF723EEFF2C0045FD73 /* libsfml-system.2.5.1.dylib */; };
 		B5CE2EFB23EEFF2C0045FD73 /* libsfml-graphics.2.5.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CE2EF823EEFF2C0045FD73 /* libsfml-graphics.2.5.1.dylib */; };
 		B5CE2EFC23EEFF2C0045FD73 /* libsfml-window.2.5.1.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B5CE2EF923EEFF2C0045FD73 /* libsfml-window.2.5.1.dylib */; };
+		FFF933F723F6E00E00907FA0 /* Run.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FFF933F623F6E00E00907FA0 /* Run.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,7 @@
 		B5CE2EF923EEFF2C0045FD73 /* libsfml-window.2.5.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "libsfml-window.2.5.1.dylib"; path = "../../../../usr/local/Cellar/sfml/2.5.1/lib/libsfml-window.2.5.1.dylib"; sourceTree = "<group>"; };
 		B5CE2EFD23EFFFB30045FD73 /* Gem.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Gem.h; sourceTree = "<group>"; };
 		FF889EE223F0725C004036D7 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = text; path = Resources; sourceTree = SOURCE_ROOT; };
+		FFF933F623F6E00E00907FA0 /* Run.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Run.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +78,9 @@
 			children = (
 				B5CE2EEF23EEFEE30045FD73 /* main.cpp */,
 				B5CE2EFD23EFFFB30045FD73 /* Gem.h */,
-				B5B7744823F021A20094A743 /* GameDirector.cpp */,
 				B5B7744923F021A20094A743 /* GameDirector.hpp */,
+				B5B7744823F021A20094A743 /* GameDirector.cpp */,
+				FFF933F623F6E00E00907FA0 /* Run.cpp */,
 			);
 			path = CandyCrush;
 			sourceTree = "<group>";
@@ -148,6 +151,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FFF933F723F6E00E00907FA0 /* Run.cpp in Sources */,
 				B5CE2EF023EEFEE30045FD73 /* main.cpp in Sources */,
 				B5B7744A23F021A20094A743 /* GameDirector.cpp in Sources */,
 			);

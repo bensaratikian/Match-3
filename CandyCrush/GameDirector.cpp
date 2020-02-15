@@ -26,107 +26,6 @@ GameDirector::GameDirector()
 
 // MARK: Public methods implementations
 
-void GameDirector::run() {
-    RenderWindow app(VideoMode(744, 1080), "My Game", Style::Close);
-    app.setFramerateLimit(60);
-    
-    _displayMainWindow(app);
-    
-    Texture t1, t2, t3, t4, t5;
-    t1.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/Background.png");
-    t2.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/gems.png");
-    t3.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/bomb.png");
-    t4.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/v_bomb.png");
-    t5.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/h_bomb.png");
-    Sprite background(t1), gems(t2), bomb(t3), verticalBomb(t4), horizontalBomb(t5);
-    
-    BOARD_LOOP {
-        _board[i][j].kind = static_cast<GemType>(std::rand() % 3);
-        _board[i][j].col = j;
-        _board[i][j].row = i;
-        _board[i][j].x = j * _tileSize;
-        _board[i][j].y = i * _tileSize;
-    }
-    
-    while (app.isOpen()) {
-        Event e;
-        while (app.pollEvent(e)) {
-            if (e.type == Event::Closed)
-                app.close();
-            
-            if (e.type == Event::MouseButtonPressed)
-                if (static_cast<int>(e.key.code) == static_cast<int>(Mouse::Left)) {
-                    const Vector2i mousePos = Mouse::getPosition(app);
-                    if (!_isSwap && !_isMoving && _contains(mousePos, {112, 894}, {633, 286})) {
-                        ++_click;
-                        _pos = mousePos - _offset;
-                    }
-                }
-        }
-        
-        // mouse click handler
-        _clickHandler();
-        
-        //Finding matches
-        _matchFinder();
-        
-        //Run animations
-        _runAnimations();
-        
-        //Deleting animation if matched
-        _deleteMatchedGems();
-                
-        //Swap back if gems do not match
-        _swapBack();
-        
-        //Update board
-        _updateBoard();
-        
-        app.draw(background);
-        
-        BOARD_LOOP {
-            const Gem &p = _board[i][j];
-            
-            switch (p.bomb) {
-                case BombType::None:
-                      gems.setTextureRect(IntRect(static_cast<int>(p.kind) * 80, 0, 80, 80));
-                      gems.setColor(Color(255, 255, 255, p.alpha));
-                      gems.setPosition(p.x, p.y);
-                      gems.move(_offset.x - _tileSize, _offset.y - _tileSize);
-                      app.draw(gems);
-                    break;
-                    
-                case BombType::Normal:
-                    bomb.setColor(Color(255, 255, 255, p.alpha));
-                    bomb.setPosition(p.x, p.y);
-                    bomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
-                    app.draw(bomb);
-                    break;
-                    
-                case BombType::Vertical:
-                    verticalBomb.setColor(Color(255, 255, 255, p.alpha));
-                    verticalBomb.setPosition(p.x, p.y);
-                    verticalBomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
-                    app.draw(verticalBomb);
-                    break;
-                    
-                case BombType::Horizontal:
-                    horizontalBomb.setColor(Color(255, 255, 255, p.alpha));
-                    horizontalBomb.setPosition(p.x, p.y);
-                    horizontalBomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
-                    app.draw(horizontalBomb);
-                    break;
-                    
-                default:
-                    break;
-            }
-            
-        }
-        
-        app.display();
-    }
-}
-
 GameDirector& GameDirector::setAnimationSpeed(int speed) noexcept {
     _speed = speed;
     return *this;
@@ -186,6 +85,7 @@ void GameDirector::_updateBoard() noexcept {
        for (int j = 1; j <= 6; ++j)
            for (int i = 7, n = 0; i > 0; --i)
                if (_board[i][j].match) {
+                   _board[i][j].bomb = BombType::None;
                    _board[i][j].kind = static_cast<GemType>(std::rand() % 5);
                    _board[i][j].y = -_tileSize * n++;
                    _board[i][j].match = 0;
@@ -211,32 +111,34 @@ void GameDirector::_clickHandler() noexcept {
                 _board[_y0 + 1][_x0].match++;
                 _board[_y0 + 1][_x0 + 1].match++;
                 _board[_y0][_x0].bomb = BombType::None;
+                _click = 0;
 
                 break;
                 
             case BombType::Vertical:
                 for (int i = 1; i <= _board[_y0].size(); _board[i++][_x0].match++) {}
                 _board[_y0][_x0].bomb = BombType::None;
-                
+                _click = 0;
+
                 break;
                 
             case BombType::Horizontal:
                 for (int i = 1; i <= _board.size(); _board[_y0][i++].match++) {}
                 _board[_y0][_x0].bomb = BombType::None;
-                
+                _click = 0;
+
                 break;
                 
             default:
                 break;
         }
-        
+                
     }
     
     if (_click == 2) {
         _x = _pos.x / _tileSize + 1;
         _y = _pos.y / _tileSize + 1;
         if (abs(_x - _x0) + abs(_y - _y0) == 1) {
-            if (!_bombFinder(_x, _y)) _bombFinder(_x0, _y0);
             _swapTiles(_board[_y0][_x0], _board[_y][_x]);
             _isSwap = true;
             _click = 0;
@@ -380,9 +282,9 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
         
         _board[y][x].kind = GemType::None;
         _board[y][x].bomb = BombType::Horizontal;
-        _board[y - 1][x].match++;
-        _board[y + 1][x].match++;
-        _board[y + 2][x].match++;
+        _board[y][x - 2].match++;
+        _board[y][x - 1].match++;
+        _board[y][x + 1].match++;
         return true;
         
     } else if (_board[y][x].kind == _board[y][x - 1].kind &&
@@ -391,9 +293,9 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
         
         _board[y][x].kind = GemType::None;
         _board[y][x].bomb = BombType::Horizontal;
-        _board[y - 2][x].match++;
-        _board[y - 1][x].match++;
-        _board[y + 1][x].match++;
+        _board[y][x - 1].match++;
+        _board[y][x + 1].match++;
+        _board[y][x + 2].match++;
         return true;
         
     }
