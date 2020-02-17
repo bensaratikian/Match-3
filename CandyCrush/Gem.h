@@ -29,7 +29,7 @@ enum class BombType : int {
 };
 
 struct Gem {
-    int x, y, col, row, match, alpha;
+    int x, y, col, row, match, alpha, isCounted;
     
     GemType kind;
     BombType bomb;
@@ -40,6 +40,7 @@ struct Gem {
     , col{}
     , row{}
     , match{}
+    , isCounted{}
     , kind{GemType::None}
     , bomb{BombType::None}
     , alpha{255} {}

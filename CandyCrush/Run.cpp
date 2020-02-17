@@ -25,7 +25,7 @@ void GameDirector::run() {
     Sprite background(t1), gems(t2), bomb(t3), verticalBomb(t4), horizontalBomb(t5);
     
     BOARD_LOOP {
-        _board[i][j].kind = static_cast<GemType>(std::rand() % 3 + 1000);
+        _board[i][j].kind = static_cast<GemType>(std::rand() % 5 + 1000);
         _board[i][j].col = j;
         _board[i][j].row = i;
         _board[i][j].x = j * _tileSize;
@@ -68,8 +68,10 @@ void GameDirector::run() {
         
         app.draw(background);
         
+        _loadLevels(app);
+
         BOARD_LOOP {
-            const Gem &p = _board[i][j];
+            Gem &p = _board[i][j];
             
             switch (p.bomb) {
                 case BombType::None:
@@ -99,6 +101,34 @@ void GameDirector::run() {
                     horizontalBomb.setPosition(p.x, p.y);
                     horizontalBomb.move(_offset.x - _tileSize, _offset.y - _tileSize);
                     app.draw(horizontalBomb);
+                    break;
+                    
+                default:
+                    break;
+            }
+            
+            // MARK: Displaying level requirements on the screen
+            if (!p.isCounted && p.match)
+            switch (p.kind) {
+                case GemType::PurpuleGem:
+                    if (_levels[0]) {
+                    _levels[0]--;
+                    p.isCounted = true;
+                    }
+                    break;
+                    
+                case GemType::BlueGem:
+                if (_levels[1]) {
+                    _levels[1]--;
+                    p.isCounted = true;
+                    }
+                    break;
+                    
+                case GemType::RedGem:
+                    if (_levels[2]) {
+                    _levels[2]--;
+                    p.isCounted = true;
+                    }
                     break;
                     
                 default:

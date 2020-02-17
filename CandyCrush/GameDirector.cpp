@@ -21,7 +21,9 @@ GameDirector::GameDirector()
 , _isSwap{}
 , _isMoving{}
 , _tileSize{87}
-, _offset{115, 290} {}
+, _offset{115, 290} {
+    for(int i = 0; i < 4; _levels[i++] = std::rand() % 15) {}
+}
 
 
 // MARK: Public methods implementations
@@ -164,6 +166,7 @@ void GameDirector::_swapBack() noexcept {
     
     if (_isSwap && !_isMoving) {
         if (!score) _swapTiles(_board[_y0][_x0], _board[_y][_x]); _isSwap = false;
+        _levels[3]--;
     }
 }
 
@@ -312,6 +315,39 @@ bool GameDirector::_bombFinder(int x, int y) noexcept {
     
     return false;
     
+}
+
+void GameDirector::_loadLevels(RenderWindow& app) noexcept {
+    Font font;
+    font.loadFromFile("/Users/bensaratikyan/Desktop/Match-3/Resources/font_19.ttf");
+    
+    Text gemLabels;
+    Text moves;
+    
+    gemLabels.setFont(font);
+    moves.setFont(font);
+    
+    gemLabels.setString(std::to_string(_levels[0]) + "   " +
+                   std::to_string(_levels[1]) + "   " +
+                   std::to_string(_levels[2]));
+    moves.setString(std::to_string(_levels[3]));
+    
+    gemLabels.setCharacterSize(50);
+    moves.setCharacterSize(70);
+    
+    gemLabels.setFillColor(Color::Black);
+    moves.setFillColor(Color::Black);
+    
+    gemLabels.setStyle(Text::Bold | Text::Underlined);
+    moves.setStyle(Text::Bold | Text::Underlined);
+
+    gemLabels.setPosition(40, 70);
+    
+    moves.setPosition(350, 20);
+    
+    app.draw(gemLabels);
+    app.draw(moves);
+
 }
 
 

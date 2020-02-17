@@ -10,6 +10,7 @@
 #define Game_hpp
 
 #include "Gem.h"
+#include <unordered_map>
 
 class GameDirector final {
     GameDirector();
@@ -25,6 +26,7 @@ class GameDirector final {
     void _swapTiles(Gem p1, Gem p2) noexcept;
     void _displayMainWindow(sf::RenderWindow&);
     bool _bombFinder(int x, int y) noexcept;
+    void _loadLevels(sf::RenderWindow&) noexcept;
     bool _contains(const sf::Vector2i &vec,
                    const std::pair<int, int> &lowerLeft,
                    const std::pair<int, int> &upperRight) noexcept;
@@ -36,6 +38,7 @@ public:
     
 private:
     Board _board;
+    std::array<int, 4> _levels;
     sf::Vector2i _pos;
     sf::Vector2i _offset;
     bool _isSwap, _isMoving;
